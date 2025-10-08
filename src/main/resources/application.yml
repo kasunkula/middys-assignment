@@ -1,0 +1,40 @@
+stats-period-in-milliseconds: 60000
+spring:
+  application:
+    name: assignment
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    metrics:
+      enabled: true
+    httptrace:
+      enabled: true
+    prometheus:
+      enabled: true
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      percentiles:
+        http.server.requests: 0.95, 0.999, 0.99
+      sla:
+        http.server.requests:
+          - 100ms
+          - 200ms
+          - 500ms
+    tags:
+      application: assignment
+    export:
+      prometheus:
+        enabled: true
+springdoc:
+  show-actuator: true
+logging:
+  level:
+    com:
+      middy:
+        assignment: INFO
+
