@@ -53,7 +53,9 @@ public class StatisticsModule {
 
     public void deleteAllOrders() {
         for (int i = 0; i < statisticsPeriodInMillis + 1; i++) {
-            interimStatistics.get(i).reset(0L);
+            synchronized (interimStatistics.get(i)) {
+                interimStatistics.get(i).reset(0L);
+            }
         }
     }
 
@@ -72,12 +74,12 @@ public class StatisticsModule {
         for (int i = 0; i < statisticsPeriodInMillis + 1; i++) {
             InterimStatistics stat = interimStatistics.get(i);
             synchronized (stat) {
-                long timestamp = stat.getTimestamp().get();
+                long timestamp = stat.getTimestamp();
                 if (start < timestamp && timestamp <= currentTimeMillis) {
-                    sum = sum.add(stat.getSum().get());
-                    count += stat.getCount().get();
-                    currentMin = stat.getMin().get().min(currentMin);
-                    currentMax = stat.getMax().get().max(currentMax);
+                    sum = sum.add(stat.getSum());
+                    count += stat.getCount();
+                    currentMin = stat.getMin().min(currentMin);
+                    currentMax = stat.getMax().max(currentMax);
                 }
             }
         }

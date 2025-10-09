@@ -44,10 +44,10 @@ public class ConcurrencyTest {
     }
 
     @Test
-    @Timeout(20)
+    @Timeout(60)
     void testConcurrentOrderSubmission() throws InterruptedException {
         int threadCount = 100;
-        int orderPerThread = 20;
+        int orderPerThread = 50;
         int totalOrders = threadCount * orderPerThread;
         ExecutorService executor = Executors.newFixedThreadPool(threadCount);
         CountDownLatch latch = new CountDownLatch(totalOrders);
