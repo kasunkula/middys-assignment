@@ -53,9 +53,7 @@ public class StatisticsModule {
 
     public void deleteAllOrders() {
         for (int i = 0; i < statisticsPeriodInMillis + 1; i++) {
-            synchronized (interimStatistics.get(i)) {
-                interimStatistics.get(i).reset(0L);
-            }
+            interimStatistics.get(i).reset(0L);
         }
     }
 

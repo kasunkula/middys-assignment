@@ -19,10 +19,6 @@ public class InterimStatistics {
     private BigDecimal min = BigDecimal.valueOf(Double.MAX_VALUE);
 
     public synchronized void reset(long newTimestamp) {
-        if (timestamp == 0) {
-            return;
-        }
-
         log.debug("Resetting InterimStatistics at timestamp: {} to {}", this.timestamp, newTimestamp);
         this.timestamp = newTimestamp;
         this.sum = BigDecimal.ZERO;
@@ -31,17 +27,11 @@ public class InterimStatistics {
         this.count = 0;
     }
 
-    /**
-     * Adds a new order to the interim statistics.
-     * This method is now fully thread-safe using synchronized blocks.
-     *
-     * @param newOrder the order to add
-     */
     public synchronized void add(Order newOrder) {
         // Initialize timestamp if this is the first order
         if (this.timestamp == 0) {
             this.timestamp = newOrder.getTimestamp();
-        } 
+        }
         // Reset statistics if order is for a different timestamp
         else if (this.timestamp != newOrder.getTimestamp()) {
             this.timestamp = newOrder.getTimestamp();
