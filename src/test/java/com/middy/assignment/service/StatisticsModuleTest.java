@@ -18,13 +18,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class StatisticsModuleTest {
 
-    private StatisticsModule statisticsModule;
+    private StatisticsModuleLockFree statisticsModule;
     private long currentTime;
     private static final int STATS_PERIOD = 60000; // 60 seconds
 
     @BeforeEach
     void setUp() {
-        statisticsModule = new StatisticsModule(Clock.systemDefaultZone(), STATS_PERIOD);
+        statisticsModule = new StatisticsModuleLockFree(Clock.systemDefaultZone(), STATS_PERIOD);
         currentTime = System.currentTimeMillis();
     }
 
@@ -119,7 +119,7 @@ class StatisticsModuleTest {
         @DisplayName("Should exclude orders 60 or older seconds")
         void shouldExcludeOldOrders() {
 
-            statisticsModule = new StatisticsModule(Clock.fixed(Instant.ofEpochMilli(currentTime), UTC), STATS_PERIOD);
+            statisticsModule = new StatisticsModuleLockFree(Clock.fixed(Instant.ofEpochMilli(currentTime), UTC), STATS_PERIOD);
 
             // Given
             long oldTime = currentTime - STATS_PERIOD; // 60 seconds older)
@@ -150,7 +150,7 @@ class StatisticsModuleTest {
         @DisplayName("Should handle edge case at exactly 60 seconds boundary")
         void shouldHandleExactBoundary() {
 
-            statisticsModule = new StatisticsModule(Clock.fixed(Instant.ofEpochMilli(currentTime), UTC), STATS_PERIOD);
+            statisticsModule = new StatisticsModuleLockFree(Clock.fixed(Instant.ofEpochMilli(currentTime), UTC), STATS_PERIOD);
 
             long exactBoundaryTime = currentTime - STATS_PERIOD + 1; // Exactly 59999 milliseconds ago
             Order boundaryOrder = new Order(BigDecimal.valueOf(150.00), exactBoundaryTime);
@@ -319,7 +319,7 @@ class StatisticsModuleTest {
         @DisplayName("Should handle future timestamps")
         void shouldHandleFutureTimestamps() {
 
-            statisticsModule = new StatisticsModule(Clock.fixed(Instant.ofEpochMilli(currentTime), UTC), STATS_PERIOD);
+            statisticsModule = new StatisticsModuleLockFree(Clock.fixed(Instant.ofEpochMilli(currentTime), UTC), STATS_PERIOD);
 
             long futureTime = currentTime + 30000; // 30 seconds in the future
             Order futureOrder = new Order(BigDecimal.valueOf(100.00), futureTime);

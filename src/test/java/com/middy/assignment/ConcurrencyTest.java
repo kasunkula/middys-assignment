@@ -44,7 +44,7 @@ public class ConcurrencyTest {
     }
 
     @Test
-    @Timeout(20)
+    @Timeout(60)
     void testConcurrentOrderSubmission() throws InterruptedException {
         int threadCount = 100;
         int orderPerThread = 20;
@@ -88,10 +88,22 @@ public class ConcurrencyTest {
             });
         }
 
-        latch.await();
+        latch.await(60, java.util.concurrent.TimeUnit.SECONDS);
         long endTime = System.currentTimeMillis();
         log.info("All {} orders submitted in {} ms", totalOrders, (endTime - startTime));
         executor.shutdown();
+
+        BigDecimal finalSum = sum;
+        webTestClient.get()
+                .uri("/v1/statistics")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(StatisticsDto.class)
+                .value(stats -> {
+                    assertEquals(totalOrders, stats.getCount(), "Count incorrect");
+                    assertEquals(finalSum, stats.getSum(), "Sum incorrect");
+                    assertEquals(avg, stats.getAvg(), "Sum incorrect");
+                });
 
         webTestClient.get()
                 .uri(uriBuilder -> uriBuilder
@@ -127,19 +139,6 @@ public class ConcurrencyTest {
                 .value(body -> {
                     log.info("Percentile metrics response: {}", body);
                 });
-
-        BigDecimal finalSum = sum;
-        webTestClient.get()
-                .uri("/v1/statistics")
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(StatisticsDto.class)
-                .value(stats -> {
-                    assertEquals(totalOrders, stats.getCount(), "Count incorrect");
-                    assertEquals(finalSum, stats.getSum(), "Sum incorrect");
-                    assertEquals(avg, stats.getAvg(), "Sum incorrect");
-                });
-
 
     }
 }

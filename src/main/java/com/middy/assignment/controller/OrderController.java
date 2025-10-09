@@ -27,7 +27,6 @@ public class OrderController {
     public OrderController(OrderService orderService, OrderTransformer orderTransformer) {
         this.orderService = orderService;
         this.orderTransformer = orderTransformer;
-        log.info("OrderController initialized with OrderService: {}", orderService);
     }
 
     @PostMapping
@@ -37,6 +36,7 @@ public class OrderController {
             orderService.addOrder(order);
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (OrderValidationException e) {
+            log.error("Unexpected error on addOrder", e);
             return ResponseEntity.status(e.getHttpStatus()).build();
         } catch (Exception e) {
             log.error("Unexpected error on addOrder", e);

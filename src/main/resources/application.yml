@@ -1,4 +1,5 @@
 stats-period-in-milliseconds: 60000
+concurrency-model: synchronous
 spring:
   application:
     name: assignment
